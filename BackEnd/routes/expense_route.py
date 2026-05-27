@@ -9,7 +9,7 @@ router=APIRouter(
     prefix="/expense"
 )
 
-@router.get("/summary", response_model=dict)
+@router.get("/", response_model=dict)
 async def get_summary():
     try:
         listExpenses = await db.expenses.find().to_list(length=100)
