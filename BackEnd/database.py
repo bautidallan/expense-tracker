@@ -1,6 +1,15 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
 
-client = AsyncIOMotorClient("mongodb+srv://bautidallan2000_db_user:test@cluster0.wp9sbv0.mongodb.net/?appName=Cluster0")
-db = client.expense_app # one database
+load_dotenv()
 
+MONGO_URI = os.getenv("MONGO_URI")
+
+client = AsyncIOMotorClient(
+    MONGO_URI,
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
+
+db = client.expense_tracker
