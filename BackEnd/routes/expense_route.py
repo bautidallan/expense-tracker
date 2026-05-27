@@ -9,7 +9,7 @@ router=APIRouter(
     prefix="/expense"
 )
 
-@router.get("/", response_model=dict)
+@router.get("/summary", response_model=dict)
 async def get_summary():
     try:
         listExpenses = await db.expenses.find().to_list(length=100)
@@ -25,18 +25,13 @@ async def get_summary():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/summary/{category}")
-async def getCategory(category:str):
-    response_list=[]
+@router.get("/summary/{category}", response_model=list[ExpenseResponse])
+async def get_by_category(category: str):
     try:
-        list=await db.expenses.find({"category":category}).to_list()
-        for expense in list:
-            response_list.append(ExpenseResponse(**expense))
-    except:
-        raise HTTPException(
-            status_code=409,
-            detail="Not found"
-        )
+        expenses = await db.expenses.find({"category": category}).to_list(length=100)
+        return [ExpenseResponse(**expense) for expense in expenses]
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
     
 @router.post("/",response_model=ExpenseResponse)
 async def createExpense(newExpense:Expense):
