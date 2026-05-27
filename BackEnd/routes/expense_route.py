@@ -7,24 +7,23 @@ from models.expense import ExpenseResponse,Expense
 
 router=APIRouter(
     prefix="/expense"
-    
 )
 
-@router.get("/",response_model=list[ExpenseResponse])
-async def getAll():
-    responseList=[]
+@router.get("/summary", response_model=dict)
+async def get_summary():
     try:
-        listExpenses=await db.expenses.find().to_list(length=100)
+        listExpenses = await db.expenses.find().to_list(length=100)
+        summary = {}
         for expense in listExpenses:
-            responseList.append(ExpenseResponse(**expense))
-        return responseList
-            
-    except:
-        raise HTTPException(
-            status_code=400,
-            detail="Erorr fetching data"
-        )
-    
+            category = expense["category"]
+            amount = expense["amount"]
+            if category in summary:
+                summary[category] += amount
+            else:
+                summary[category] = amount
+        return summary
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/summary/{category}")
 async def getCategory(category:str):
