@@ -12,7 +12,7 @@ router=APIRouter(
 @router.get("/summary", response_model=dict)
 async def get_summary():
     try:
-        listExpenses = await db.expenses.find().to_list(length=100)
+        listExpenses = await db.category.find().to_list(length=100)
         summary = {}
         for expense in listExpenses:
             category = expense["category"]
@@ -28,7 +28,7 @@ async def get_summary():
 @router.get("/summary/{category}", response_model=list[ExpenseResponse])
 async def get_by_category(category: str):
     try:
-        expenses = await db.expenses.find({"category": category}).to_list(length=100)
+        expenses = await db.category.find({"category": category}).to_list(length=100)
         return [ExpenseResponse(**expense) for expense in expenses]
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
