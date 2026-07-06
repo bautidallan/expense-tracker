@@ -1,13 +1,13 @@
 from operator import gt
 from pydantic import BaseModel,Field
-from datetime import datetime
+from datetime import date
 
 
 class Expense(BaseModel):
     amount:float 
     category:str = Field(min_length=3,max_length=10)
     description:str
-    date:datetime 
+    date:date
 
 class ExpenseResponse(Expense):
     id: str  
